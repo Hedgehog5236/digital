@@ -12,7 +12,6 @@ void inputTab(double tab[M][N],int ids[L]){
   int i,j,k;
   double elm;
   
-  // クリヤー
   for(i=0;i<M;i++) {
     for(j=0;j<N;j++) {
       tab[i][j] = 0.;
