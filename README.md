@@ -60,4 +60,4 @@ plt.show()
         参考箇所・・・目盛り、ラベル  
 
     3. 実行の様子
-    ![1](\digital.gif)
+    ![digital.gif](digital.gif)
