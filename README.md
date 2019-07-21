@@ -2,47 +2,52 @@
 
 - コード
 ```py
-import cv2
 import numpy as np
+import cv2
+import os
 from PIL import Image
 import matplotlib.pyplot as plt
 
-img1=cv2.imread('digi1.jpg',0)
-img2=cv2.imread('digi2.jpg',0)
-img3=cv2.imread('digi3.jpg',0)
-img4=cv2.imread('digi4.jpg',0)
+ave=[]
+j=0
 
-imave1=np.mean(img1)
-imave2=np.mean(img2)
-imave3=np.mean(img3)
-imave4=np.mean(img4)
+cap = cv2.VideoCapture('digital.mp4')   #動画ファイル読込準備
 
-ylist=[imave1, imave2, imave3, imave4]
+dir_name = "screen_caps"
+if not os.path.exists(dir_name):
+    os.mkdir(dir_name)
 
-print(ylist)
-
-xlist=[1, 2, 3, 4]
-plt.xticks([1, 2, 3, 4])
-plt.plot(xlist, ylist, 'o')
-plt.xlabel("Number of pictures")
-plt.ylabel("Average of luminance")
-plt.show()
+frame_count = int(cap.get(7))
+for i in range(frame_count):
+    ret, frame = cap.read()   #動画ファイルのframe読込
+    cv2.imwrite(dir_name+ "/" + str(i) + ".png", frame)
+    gray = cv2.imread('screen_caps/{}.png'.format(i), 0)  #frameをgray画像に変換
+    ave = np.append(ave, np.mean(gray))
+    plt.plot(np.arange(i+1), ave)
+    plt.xlabel('Number of frame')
+    plt.ylabel('Average of luminance value')
+    plt.xlim(0, frame_count)
+    plt.ylim(65, 75)
+    im="im{}.png".format(i)
+    plt.savefig(im)
+    plt.clf()
+plt.plot(np.arange(frame_count), ave)
 ```
 
 - プログラムの説明  
-   1. cv2, numpy, PIL, matplotlib.pyplotを読み込む
-   2. カレントディレクトリ内にある、画像ファイルdigi1.jpg ~ digi4.jpgをimg1 ~ img4に読み込む
-   3. imave1 ~ imave4にそれぞれの輝度値の平均を代入する
-   4. ylistにそれらを格納、print
-   5. xlistと、plt.xticksでグラフでx軸に使う画像番号を準備、整形
-   6. plt.plotでグラフにプロット(オプション'o'で小さい青丸の点で表示)
-   7. 軸ラベルなどの設定
+   1. cv2, os, numpy, PIL, matplotlib.pyplotを読み込む
+   2. カレントディレクトリ内にある、動画ファイルdigital.mp4を読み込む
+   3. カレントディレクトリに"screen_caps"ディレクトリがなければディレクトリを作成する
+   4. フレーム総数回、フレームを読み込み、名前を付けてpng形式でscreen_capsディレクトリに書き込む
+   5. 書き込まれた画像ファイルをグレースケールでよ読み込み、それぞれの輝度値の平均を計算・プロットする
+   6. 番号順に、名前を付けて出力された画像を保存し、メモリを過剰に使うのを防ぐために、グラフをクリアして再利用する
+   7. 最後に、すべてのフレームにおける、輝度値の平均のプロット結果を表示する
 
-2. 使い方，実行の仕方，依存ライブラリとバージョン
+1. 使い方，実行の仕方，依存ライブラリとバージョン
 
     - 使い方・実行の仕方
-        - digital.ipynbダウンロードし、jupyter notebookを起動。ctrl+Enterで実行(カレントディレクトリにあらかじめファイル名 digi1.jpg ~ digi4.jpgを用意しておく)
-    - 依存ライブラリとバージョン  
+        - digital.ipynbダウンロードし、jupyter notebookを起動。ctrl+Enterでコードを実行(カレントディレクトリにあらかじめファイル名"digital.mp4"を用意しておくか、代わりとなるファイル名にコードを書き換える)
+    - 依存ライブラリとバージョン  (osを除く)
         - opencv-python　　4.1.0.25  
         - numpy　　1.16.4  
         - matplotlib　　3.1.0  
@@ -50,14 +55,23 @@ plt.show()
 
    - 参考にしたサイトなどへのリンク  
      - 「Qiita」matplotlibでのプロットの基本  
-     https://qiita.com/KntKnk0328/items/5ef40d9e77308dd0d0a4  
+    https://qiita.com/KntKnk0328/items/5ef40d9e77308dd0d0a4  
        
-        参考箇所・・・プロットのマーカー指定
+        参考箇所・・・プロットのマーカー指定  
      - 「Qiita」matplotlib によるデータ可視化の方法 (2)  
-     https://qiita.com/ynakayama/items/aec4e962d738d24641ee  
+    https://qiita.com/ynakayama/items/aec4e962d738d24641ee  
      
-        
         参考箇所・・・目盛り、ラベル  
+     - 「Opencv」動画を扱う  
+    http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_gui/py_video_display/py_video_display.html
+     
+        参考箇所・・・動画の読み込み
 
-    3. 実行の様子
+     - 「Opencv」動画を扱う  
+    http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_gui/py_video_display/py_video_display.html
+     
+        参考箇所・・・動画の読み込み
+ 
+
+    1. 実行の様子
     ![digital.gif](digital.gif)
